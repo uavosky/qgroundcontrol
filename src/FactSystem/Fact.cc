@@ -31,7 +31,8 @@ Fact::Fact(QObject* parent)
     FactMetaData* metaData = new FactMetaData(_type, this);
     setMetaData(metaData);
 
-    _init();
+    // Better safe than sorry on object ownership
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 Fact::Fact(int componentId, QString name, FactMetaData::ValueType_t type, QObject* parent)
@@ -47,8 +48,7 @@ Fact::Fact(int componentId, QString name, FactMetaData::ValueType_t type, QObjec
 {
     FactMetaData* metaData = new FactMetaData(_type, this);
     setMetaData(metaData);
-
-    _init();
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 Fact::Fact(const QString& settingsGroup, FactMetaData* metaData, QObject* parent)
@@ -64,22 +64,13 @@ Fact::Fact(const QString& settingsGroup, FactMetaData* metaData, QObject* parent
 {
     qgcApp()->toolbox()->corePlugin()->adjustSettingMetaData(settingsGroup, *metaData);
     setMetaData(metaData, true /* setDefaultFromMetaData */);
-
-    _init();
 }
 
 Fact::Fact(const Fact& other, QObject* parent)
     : QObject(parent)
 {
     *this = other;
-
-    _init();
-}
-
-void Fact::_init(void)
-{
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-    connect(this, &Fact::_containerRawValueChanged, this, &Fact::_checkForRebootMessaging);
 }
 
 const Fact& Fact::operator=(const Fact& other)
@@ -598,20 +589,10 @@ QVariant Fact::clamp(const QString& cookedValue)
     return QVariant();
 }
 
-bool Fact::vehicleRebootRequired(void) const
+bool Fact::rebootRequired(void) const
 {
     if (_metaData) {
-        return _metaData->vehicleRebootRequired();
-    } else {
-        qWarning() << kMissingMetadata << name();
-        return false;
-    }
-}
-
-bool Fact::qgcRebootRequired(void) const
-{
-    if (_metaData) {
-        return _metaData->qgcRebootRequired();
+        return _metaData->rebootRequired();
     } else {
         qWarning() << kMissingMetadata << name();
         return false;
@@ -724,15 +705,4 @@ FactValueSliderListModel* Fact::valueSliderModel(void)
         _valueSliderModel = new FactValueSliderListModel(*this);
     }
     return _valueSliderModel;
-}
-
-void Fact::_checkForRebootMessaging(void)
-{
-    if (!qgcApp()->runningUnitTests()) {
-        if (vehicleRebootRequired()) {
-            qgcApp()->showMessage(tr("Change of parameter %1 requires a Vehicle reboot to take effect.").arg(name()));
-        } else if (qgcRebootRequired()) {
-            qgcApp()->showMessage(tr("Change of '%1' value requires restart of %2 to take effect.").arg(shortDescription()).arg(qgcApp()->applicationName()));
-        }
-    }
 }

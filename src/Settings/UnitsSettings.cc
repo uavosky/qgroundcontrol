@@ -43,10 +43,8 @@ Fact* UnitsSettings::distanceUnits(void)
         
         FactMetaData* metaData = new FactMetaData(FactMetaData::valueTypeUint32, this);
         metaData->setName(distanceUnitsSettingsName);
-        metaData->setShortDescription(tr("Distance units"));
         metaData->setEnumInfo(enumStrings, enumValues);
         metaData->setRawDefaultValue(DistanceUnitsMeters);
-        metaData->setQGCRebootRequired(true);
 
         _distanceUnitsFact = new SettingsFact(_settingsGroup, metaData, this);
 
@@ -68,10 +66,8 @@ Fact* UnitsSettings::areaUnits(void)
 
         FactMetaData* metaData = new FactMetaData(FactMetaData::valueTypeUint32, this);
         metaData->setName(areaUnitsSettingsName);
-        metaData->setShortDescription(tr("Area units"));
         metaData->setEnumInfo(enumStrings, enumValues);
         metaData->setRawDefaultValue(AreaUnitsSquareMeters);
-        metaData->setQGCRebootRequired(true);
 
         _areaUnitsFact = new SettingsFact(_settingsGroup, metaData, this);
     }
@@ -92,10 +88,8 @@ Fact* UnitsSettings::speedUnits(void)
 
         FactMetaData* metaData = new FactMetaData(FactMetaData::valueTypeUint32, this);
         metaData->setName(speedUnitsSettingsName);
-        metaData->setShortDescription(tr("Speed units"));
         metaData->setEnumInfo(enumStrings, enumValues);
         metaData->setRawDefaultValue(SpeedUnitsMetersPerSecond);
-        metaData->setQGCRebootRequired(true);
 
         _speedUnitsFact = new SettingsFact(_settingsGroup, metaData, this);
     }
@@ -115,10 +109,8 @@ Fact* UnitsSettings::temperatureUnits(void)
 
         FactMetaData* metaData = new FactMetaData(FactMetaData::valueTypeUint32, this);
         metaData->setName(temperatureUnitsSettingsName);
-        metaData->setShortDescription(tr("Temperature units"));
         metaData->setEnumInfo(enumStrings, enumValues);
         metaData->setRawDefaultValue(TemperatureUnitsCelsius);
-        metaData->setQGCRebootRequired(true);
 
         _temperatureUnitsFact = new SettingsFact(_settingsGroup, metaData, this);
     }
