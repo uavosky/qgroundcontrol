@@ -76,6 +76,7 @@ const char* Vehicle::_battery1FactGroupName =           "battery";
 const char* Vehicle::_battery2FactGroupName =           "battery2";
 const char* Vehicle::_windFactGroupName =               "wind";
 const char* Vehicle::_vibrationFactGroupName =          "vibration";
+const char* Vehicle::_landingTargetStatusFactGroupName ="landingTargetStatus";
 const char* Vehicle::_temperatureFactGroupName =        "temperature";
 const char* Vehicle::_clockFactGroupName =              "clock";
 const char* Vehicle::_distanceSensorFactGroupName =     "distanceSensor";
@@ -198,6 +199,7 @@ Vehicle::Vehicle(LinkInterface*             link,
     , _battery2FactGroup(this)
     , _windFactGroup(this)
     , _vibrationFactGroup(this)
+    , _landingTargetStatusFactGroup(this)
     , _temperatureFactGroup(this)
     , _clockFactGroup(this)
     , _distanceSensorFactGroup(this)
@@ -391,6 +393,7 @@ Vehicle::Vehicle(MAV_AUTOPILOT              firmwareType,
     , _battery2FactGroup(this)
     , _windFactGroup(this)
     , _vibrationFactGroup(this)
+    , _landingTargetStatusFactGroup(this)
     , _clockFactGroup(this)
     , _distanceSensorFactGroup(this)
 {
@@ -462,6 +465,8 @@ void Vehicle::_commonInit(void)
     _addFactGroup(&_battery2FactGroup,          _battery2FactGroupName);
     _addFactGroup(&_windFactGroup,              _windFactGroupName);
     _addFactGroup(&_vibrationFactGroup,         _vibrationFactGroupName);
+    _addFactGroup(&_landingTargetStatusFactGroup, _landingTargetStatusFactGroupName);
+
     _addFactGroup(&_temperatureFactGroup,       _temperatureFactGroupName);
     _addFactGroup(&_clockFactGroup,             _clockFactGroupName);
     _addFactGroup(&_distanceSensorFactGroup,    _distanceSensorFactGroupName);
@@ -683,6 +688,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
         break;
     case MAVLINK_MSG_ID_VIBRATION:
         _handleVibration(message);
+        break;
+    case MAVLINK_MSG_ID_LANDING_TARGET_STATUS:
+        _handleLandingTargetStatus(message);
         break;
     case MAVLINK_MSG_ID_EXTENDED_SYS_STATE:
         _handleExtendedSysState(message);
@@ -1382,6 +1390,21 @@ void Vehicle::_handleVibration(mavlink_message_t& message)
     _vibrationFactGroup.clipCount1()->setRawValue(vibration.clipping_0);
     _vibrationFactGroup.clipCount2()->setRawValue(vibration.clipping_1);
     _vibrationFactGroup.clipCount3()->setRawValue(vibration.clipping_2);
+}
+
+void Vehicle::_handleLandingTargetStatus(mavlink_message_t& message)
+{
+    mavlink_landing_target_status_t landingTargetStatus;
+
+    qDebug( "Landing Target Message received" );
+    mavlink_msg_landing_target_status_decode(&message, &landingTargetStatus);
+
+    _landingTargetStatusFactGroup.targetNum()->setRawValue(landingTargetStatus.target_num);
+    _landingTargetStatusFactGroup.offsetX()->setRawValue(landingTargetStatus.offset_x);
+    _landingTargetStatusFactGroup.offsetY()->setRawValue(landingTargetStatus.offset_y);
+    _landingTargetStatusFactGroup.distance()->setRawValue(landingTargetStatus.distance);
+    _landingTargetStatusFactGroup.type()->setRawValue(landingTargetStatus.type);
+    _landingTargetStatusFactGroup.trustLevel()->setRawValue(landingTargetStatus.trust_level);
 }
 
 void Vehicle::_handleWindCov(mavlink_message_t& message)
@@ -3805,6 +3828,35 @@ VehicleVibrationFactGroup::VehicleVibrationFactGroup(QObject* parent)
     _xAxisFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
     _yAxisFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
     _zAxisFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
+}
+
+const char* VehicleLandingTargetStatusFactGroup::_targetNumFactName =  "targetNum";
+const char* VehicleLandingTargetStatusFactGroup::_offsetXFactName =    "offsetX";
+const char* VehicleLandingTargetStatusFactGroup::_offsetYFactName =    "offsetY";
+const char* VehicleLandingTargetStatusFactGroup::_distanceFactName =   "distance";
+const char* VehicleLandingTargetStatusFactGroup::_typeFactName =       "type";
+const char* VehicleLandingTargetStatusFactGroup::_trustLevelFactName = "trustLevel";
+
+VehicleLandingTargetStatusFactGroup::VehicleLandingTargetStatusFactGroup(QObject* parent)
+    : FactGroup(1000, ":/json/Vehicle/LandingTargetStatusFact.json", parent)
+    , _targetNumFact    (0, _targetNumFactName,     FactMetaData::valueTypeUint32)
+    , _offsetXFact      (0, _offsetXFactName,       FactMetaData::valueTypeDouble)
+    , _offsetYFact      (0, _offsetYFactName,       FactMetaData::valueTypeDouble)
+    , _distanceFact     (0, _distanceFactName,      FactMetaData::valueTypeDouble)
+    , _typeFact         (0, _typeFactName,          FactMetaData::valueTypeUint32)
+    , _trustLevelFact   (0, _trustLevelFactName,    FactMetaData::valueTypeUint32)
+{
+    _addFact(&_targetNumFact,    _targetNumFactName);
+    _addFact(&_offsetXFact,      _offsetXFactName);
+    _addFact(&_offsetYFact,      _offsetYFactName);
+    _addFact(&_distanceFact,     _distanceFactName);
+    _addFact(&_typeFact,         _typeFactName);
+    _addFact(&_trustLevelFact,   _trustLevelFactName);
+
+    // Start out as not available "--.--"
+    _offsetXFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
+    _offsetYFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
+    _distanceFact.setRawValue(std::numeric_limits<float>::quiet_NaN());
 }
 
 const char* VehicleTemperatureFactGroup::_temperature1FactName =      "temperature1";

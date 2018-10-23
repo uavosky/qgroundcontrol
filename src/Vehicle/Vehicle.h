@@ -177,7 +177,44 @@ private:
     Fact        _clipCount2Fact;
     Fact        _clipCount3Fact;
 };
+class VehicleLandingTargetStatusFactGroup : public FactGroup
+{
+    Q_OBJECT
 
+public:
+    VehicleLandingTargetStatusFactGroup(QObject* parent = nullptr);
+
+    Q_PROPERTY(Fact* targetNum    READ targetNum    CONSTANT)
+    Q_PROPERTY(Fact* offsetX      READ offsetX      CONSTANT)
+    Q_PROPERTY(Fact* offsetY      READ offsetY      CONSTANT)
+    Q_PROPERTY(Fact* distance     READ distance      CONSTANT)
+    Q_PROPERTY(Fact* type         READ type          CONSTANT)
+    Q_PROPERTY(Fact* trustLevel   READ trustLevel   CONSTANT)
+
+
+    Fact* targetNum       (void) { return &_targetNumFact; }
+    Fact* offsetX         (void) { return &_offsetXFact; }
+    Fact* offsetY         (void) { return &_offsetYFact; }
+    Fact* distance         (void) { return &_distanceFact; }
+    Fact* type             (void) { return &_typeFact; }
+    Fact* trustLevel      (void) { return &_trustLevelFact; }
+
+    static const char* _targetNumFactName;
+    static const char* _offsetXFactName;
+    static const char* _offsetYFactName;
+    static const char* _distanceFactName;
+    static const char* _typeFactName;
+    static const char* _trustLevelFactName;
+
+
+private:
+    Fact        _targetNumFact;
+    Fact        _offsetXFact;
+    Fact        _offsetYFact;
+    Fact        _distanceFact;
+    Fact        _typeFact;
+    Fact        _trustLevelFact;
+};
 class VehicleWindFactGroup : public FactGroup
 {
     Q_OBJECT
@@ -663,6 +700,8 @@ public:
     Q_PROPERTY(FactGroup* battery2          READ battery2FactGroup          CONSTANT)
     Q_PROPERTY(FactGroup* wind              READ windFactGroup              CONSTANT)
     Q_PROPERTY(FactGroup* vibration         READ vibrationFactGroup         CONSTANT)
+    Q_PROPERTY(FactGroup* landingTargetStatus READ landingTargetStatusFactGroup  CONSTANT)
+
     Q_PROPERTY(FactGroup* temperature       READ temperatureFactGroup       CONSTANT)
     Q_PROPERTY(FactGroup* clock             READ clockFactGroup             CONSTANT)
     Q_PROPERTY(FactGroup* setpoint          READ setpointFactGroup          CONSTANT)
@@ -952,6 +991,8 @@ public:
     FactGroup* battery2FactGroup        (void) { return &_battery2FactGroup; }
     FactGroup* windFactGroup            (void) { return &_windFactGroup; }
     FactGroup* vibrationFactGroup       (void) { return &_vibrationFactGroup; }
+    FactGroup* landingTargetStatusFactGroup (void) { return &_landingTargetStatusFactGroup; }
+
     FactGroup* temperatureFactGroup     (void) { return &_temperatureFactGroup; }
     FactGroup* clockFactGroup           (void) { return &_clockFactGroup; }
     FactGroup* setpointFactGroup        (void) { return &_setpointFactGroup; }
@@ -1214,6 +1255,7 @@ private:
     void _handleSysStatus(mavlink_message_t& message);
     void _handleWindCov(mavlink_message_t& message);
     void _handleVibration(mavlink_message_t& message);
+    void _handleLandingTargetStatus(mavlink_message_t& message);
     void _handleExtendedSysState(mavlink_message_t& message);
     void _handleCommandAck(mavlink_message_t& message);
     void _handleCommandLong(mavlink_message_t& message);
@@ -1460,6 +1502,7 @@ private:
     VehicleBatteryFactGroup         _battery2FactGroup;
     VehicleWindFactGroup            _windFactGroup;
     VehicleVibrationFactGroup       _vibrationFactGroup;
+    VehicleLandingTargetStatusFactGroup _landingTargetStatusFactGroup;
     VehicleTemperatureFactGroup     _temperatureFactGroup;
     VehicleClockFactGroup           _clockFactGroup;
     VehicleSetpointFactGroup        _setpointFactGroup;
@@ -1487,6 +1530,7 @@ private:
     static const char* _battery2FactGroupName;
     static const char* _windFactGroupName;
     static const char* _vibrationFactGroupName;
+    static const char* _landingTargetStatusFactGroupName;
     static const char* _temperatureFactGroupName;
     static const char* _clockFactGroupName;
     static const char* _distanceSensorFactGroupName;

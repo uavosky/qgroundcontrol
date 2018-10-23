@@ -1,0 +1,35 @@
+[
+{
+    "name":             "targetNum",
+    "shortDescription": "Beacon ID",
+    "type":             "uint32"
+},
+{
+    "name":             "offsetX",
+    "shortDescription": "Target OX",
+    "type":             "double",
+    "decimalPlaces":    1
+},
+{
+    "name":             "offsetY",
+    "shortDescription": "Target OY",
+    "type":             "double",
+    "decimalPlaces":    1
+},
+{
+    "name":             "distance",
+    "shortDescription": "Distance",
+    "type":             "double",
+    "decimalPlaces":    1
+},
+{
+    "name":             "type",
+    "shortDescription": "Beacon type",
+    "type":             "uint32"
+},
+{
+    "name":             "trustLevel",
+    "shortDescription": "Trust",
+    "type":             "uint32"
+}
+]
