@@ -8,19 +8,22 @@
     "name":             "offsetX",
     "shortDescription": "Target OX",
     "type":             "double",
-    "decimalPlaces":    1
+    "decimalPlaces":    2,
+    "units":            "m"
 },
 {
     "name":             "offsetY",
     "shortDescription": "Target OY",
     "type":             "double",
-    "decimalPlaces":    1
+    "decimalPlaces":    2,
+    "units":            "m"
 },
 {
     "name":             "distance",
     "shortDescription": "Distance",
     "type":             "double",
-    "decimalPlaces":    1
+    "decimalPlaces":    2,
+    "units":            "m"
 },
 {
     "name":             "type",
